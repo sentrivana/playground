@@ -1,0 +1,40 @@
+name: Test
+
+on:
+  pull_request_target:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  SUPER_SECRET: ${{ secrets.SUPER_SECRET }}
+
+jobs:
+  authorize:
+    environment:
+      ${{ github.event_name == 'pull_request_target' &&
+      github.event.pull_request.head.repo.full_name != github.repository &&
+      'external' || 'internal' }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: true
+
+  test:
+    needs: authorize
+    name: amazing-test
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
+
+      - name: Install
+        run: |
+          pip install sentry_sdk
