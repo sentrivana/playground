@@ -8,6 +8,7 @@ from urllib.request import Request, urlopen
 LABEL = "Trigger: tests"
 
 # A comment! (just testing)
+# another comment...
 
 def _has_write(repo_id: int, username: str, *, token: str) -> bool:
     req = Request(
