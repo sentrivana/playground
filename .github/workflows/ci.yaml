@@ -40,9 +40,9 @@ jobs:
           # these can contain special characters
           ARG_USERNAME: ${{ github.event.pull_request.user.login }}
           ARG_LABEL_NAMES: ${{ toJSON(github.event.pull_request.labels.*.name) }}
-       - name: permissions
-         if: github.event_name == 'push'
-         run: true
+      - name: permissions
+        if: github.event_name == 'push'
+        run: true
 
   test:
     needs: check-permissions
