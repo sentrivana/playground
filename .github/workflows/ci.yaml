@@ -1,6 +1,9 @@
 name: Test
 
 on:
+  push:
+    branches:
+      - master
   pull_request_target:
     types: [labeled, opened, reopened, synchronize]
 
@@ -23,7 +26,8 @@ jobs:
       - uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # v3.1.0
         with:
           persist-credentials: false
-      - name: permissions
+      - name: permissions PR
+        if: github.event_name == 'pull_request_target'
         run: |
           python3 -uS .github/workflows/script.py \
               --repo-id ${{ github.event.repository.id }} \
@@ -36,6 +40,9 @@ jobs:
           # these can contain special characters
           ARG_USERNAME: ${{ github.event.pull_request.user.login }}
           ARG_LABEL_NAMES: ${{ toJSON(github.event.pull_request.labels.*.name) }}
+       - name: permissions
+         if: github.event_name == 'push'
+         run: true
 
   test:
     needs: check-permissions
