@@ -1,0 +1,38 @@
+name: Run script
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+
+permissions:
+  contents: read
+
+jobs:
+  generate:
+    name: Run a dummy script and create a PR
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4.2.2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.13
+
+      - name: Set up git
+        run: |
+          git config user.name "bot-bottinson"
+          git config user.email "bot@example.com
+
+      - name: Run script
+        run: |
+          python scripts/dummy.py
+
+      - name: Commit
+        run: |
+          git add --all
+          git commit -m 'Ran script'
+
+      - name: Open PR
+        run: |
+          gh pr create -B master --title 'Did something' --body $'This is some text.\n\nSome more text:\n  - A list item.\n  - Another one\n\nBye!'
