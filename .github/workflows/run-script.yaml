@@ -37,4 +37,4 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh pr create -B master --title 'Did something' --body $'This is some text.\n\nSome more text:\n  - A list item.\n  - Another one\n\nBye!'
+          gh pr create --head -B master --title 'Did something' --body $'This is some text.\n\nSome more text:\n  - A list item.\n  - Another one\n\nBye!'
