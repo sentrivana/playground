@@ -21,8 +21,8 @@ jobs:
 
       - name: Set up git
         run: |
-          git config user.name "bot-bottinson"
-          git config user.email "bot@example.com
+          git config user.name 'bot bottinson'
+          git config user.email 'bot@example.com'
 
       - name: Run script
         run: |
