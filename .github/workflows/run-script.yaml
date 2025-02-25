@@ -7,9 +7,6 @@ on:
 permissions:
   contents: read
 
-env:
-    GH_TOKEN: ${{ github.token }}
-
 jobs:
   generate:
     name: Run a dummy script and create a PR
@@ -37,5 +34,7 @@ jobs:
           git commit -m 'Ran script'
 
       - name: Open PR
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh pr create -B master --title 'Did something' --body $'This is some text.\n\nSome more text:\n  - A list item.\n  - Another one\n\nBye!'
