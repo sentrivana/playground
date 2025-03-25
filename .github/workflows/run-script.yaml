@@ -12,6 +12,8 @@ jobs:
     name: Run a dummy script and create a PR
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    permissions:
+      pull-requests: write
 
     steps:
       - uses: actions/checkout@v4.2.2
@@ -35,8 +37,6 @@ jobs:
           git commit -m 'Ran script'
 
       - name: Open PR
-        permissions:
-          pull-requests: write
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
