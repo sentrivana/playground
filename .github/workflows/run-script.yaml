@@ -35,6 +35,8 @@ jobs:
           git commit -m 'Ran script'
 
       - name: Open PR
+        permissions:
+          pull-requests: write
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
