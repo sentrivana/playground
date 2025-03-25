@@ -19,10 +19,11 @@ jobs:
         with:
           python-version: 3.13
 
-      - name: Set up git
+      - name: Set up git and open a branch
         run: |
           git config user.name 'bot bottinson'
           git config user.email 'bot@example.com'
+          git checkout -b toxgen/run-script
 
       - name: Run script
         run: |
@@ -37,4 +38,4 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh pr create --title 'Did something' --body $'This is some text.\n\nSome more text:\n  - A list item.\n  - Another one\n\nBye!'
+          gh pr create -H toxgen/run-script --title 'Did something' --body $'This is some text.\n\nSome more text:\n  - A list item.\n  - Another one\n\nBye!'
