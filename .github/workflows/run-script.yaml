@@ -57,21 +57,7 @@ jobs:
             const commitTitle = '${{ steps.create-branch.outputs.commit_title }}';
             const date = '${{ steps.create-branch.outputs.date }}';
 
-            // Close existing toxgen PRs as they're now obsolete
 
-            const { data: existingPRs } = await github.rest.pulls.list({
-                owner: context.repo.owner,
-                repo: 'playground',
-                head: `${context.repo.owner}:${branchName}`,
-                state: 'open'
-            });
-
-            existingPRs.forEach(pr => await github.rest.pulls.update({
-                owner: context.repo.owner,
-                repo: 'playground',
-                pull_number: pr.number,
-                state: 'closed',
-            }));
 
             const { data: pr } = await github.rest.pulls.create({
                 owner: context.repo.owner,
