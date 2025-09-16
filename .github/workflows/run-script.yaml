@@ -2,42 +2,89 @@ name: Run script
 
 on:
   schedule:
-    - cron: '*/5 * * * *'
-
-permissions:
-  contents: read
+    - cron:  '23 3 * * 1'
 
 jobs:
   generate:
     name: Run a dummy script and create a PR
     runs-on: ubuntu-latest
     timeout-minutes: 10
+
     permissions:
+      contents: write
       pull-requests: write
 
     steps:
-      - uses: actions/checkout@v4.2.2
+      - uses: actions/checkout@v5.0.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
       - uses: actions/setup-python@v5
         with:
           python-version: 3.13
 
-      - name: Set up git and open a branch
+      - name: Set up git
         run: |
-          git config user.name 'bot bottinson'
-          git config user.email 'bot@example.com'
-          git checkout -b toxgen/run-script
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
 
       - name: Run script
         run: |
           python scripts/dummy.py
 
-      - name: Commit
+      - name: Create branch
+        id: create-branch
         run: |
-          git add --all
-          git commit -m 'Ran script'
+          COMMIT_TITLE="auto: Run script"
+          DATE="date +%m/%d"
+          BRANCH_NAME="toxgen/update"
 
-      - name: Open PR
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh pr create -H toxgen/run-script --title 'Did something' --body $'This is some text.\n\nSome more text:\n  - A list item.\n  - Another one\n\nBye!'
+          git checkout -B "$BRANCH_NAME"
+          git add SOME_FILE.md
+          git commit -m "$COMMIT_TITLE"
+          git push origin "$BRANCH_NAME" --force
+
+          echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+          echo "commit_title=$COMMIT_TITLE" >> $GITHUB_OUTPUT
+          echo "date=$DATE" >> $GITHUB_OUTPUT
+
+      - name: Create pull request
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # 8.0.0
+        with:
+          script: |
+            const branchName = '${{ steps.create-branch.outputs.branch_name }}';
+            const commitTitle = '${{ steps.create-branch.outputs.commit_title }}';
+            const date = '${{ steps.create-branch.outputs.date }}';
+
+            // Close existing toxgen PRs as they're now obsolete
+
+            const { data: existingPRs } = await github.rest.pulls.list({
+                owner: context.repo.owner,
+                repo: 'playground',
+                head: `${context.repo.owner}:${branchName}`,
+                state: 'open'
+            });
+
+            existingPRs.forEach(pr => await github.rest.pulls.update({
+                owner: context.repo.owner,
+                repo: 'playground',
+                pull_number: pr.number,
+                state: 'closed',
+            }));
+
+            const { data: pr } = await github.rest.pulls.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: commitTitle + ' (' + date + ')',
+                head: branchName,
+                base: '${{ github.ref_name }}',
+                body: `Run script
+
+                ## How it works
+                - Some text
+                - Other text
+
+                This PR was automatically created using [a GitHub action](.github/workflows/run-script.yml).`
+            });
+
+            console.log(`Created PR #${pr.number}: ${pr.title}`);
