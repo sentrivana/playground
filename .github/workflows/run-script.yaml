@@ -1,6 +1,7 @@
 name: Run script
 
 on:
+  workflow_dispatch:
   schedule:
     - cron:  '23 3 * * 1'
 
