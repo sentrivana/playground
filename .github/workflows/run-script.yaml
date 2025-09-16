@@ -66,12 +66,14 @@ jobs:
 
             console.log(existingPRs);
 
-            existingPRs.forEach(pr => await github.rest.pulls.update({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                pull_number: pr.number,
-                state: 'closed'
-            }));
+            for (const pr of existingPRs) {
+                await github.rest.pulls.update({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    pull_number: pr.number,
+                    state: 'closed'
+                });
+            };
 
             const { data: pr } = await github.rest.pulls.create({
                 owner: context.repo.owner,
