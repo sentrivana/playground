@@ -79,7 +79,8 @@ jobs:
                 title: commitTitle + ' (' + date + ')',
                 head: branchName,
                 base: '${{ github.ref_name }}',
-                body: `Update test matrix with new releases of integrated frameworks and libraries.
+                body: stripIndent`
+                Update test matrix with new releases of integrated frameworks and libraries.
 
                   ## How it works
                   - Scan PyPI for all supported releases of all frameworks we have a dedicated test suite for.
@@ -91,5 +92,5 @@ jobs:
                   - If CI doesn't pass on this PR, this points to an incompatibility of either our integration or our test setup with a new version of a framework.
                     - Check what the failures look like and either fix them, or update the [test config](scripts/populate_tox/config.py) and rerun (scripts/generate-test-files.sh)[scripts/generate-test-files.sh]. See [README.md](scripts/populate_tox/README.md) for what configuration options are available.
 
-                  This PR was automatically created using [a GitHub action](.github/workflows/update-tox.yml).`
+                  This PR was automatically created using [a GitHub action](.github/workflows/update-tox.yml).`.trim()
             });
