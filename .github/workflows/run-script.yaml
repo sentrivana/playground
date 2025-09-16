@@ -72,8 +72,8 @@ jobs:
                     repo: context.repo.repo,
                     pull_number: pr.number,
                     state: 'closed'
-                });
-            };
+                })
+            }
 
             const { data: pr } = await github.rest.pulls.create({
                 owner: context.repo.owner,
@@ -81,13 +81,7 @@ jobs:
                 title: commitTitle + ' (' + date + ')',
                 head: branchName,
                 base: '${{ github.ref_name }}',
-                body: 'Run script
-
-                ## How it works
-                - Some text
-                - Other text
-
-                This PR was automatically created using [a GitHub action](.github/workflows/run-script.yml).'
+                body: 'Run script\n\n## How it works\n- Some text\n- Other text\n\nThis PR was automatically created using [a GitHub action](.github/workflows/run-script.yml).'
             });
 
             console.log(`Created PR #${pr.number}: ${pr.title}`);
